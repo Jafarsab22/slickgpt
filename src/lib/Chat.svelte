@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { afterUpdate, beforeUpdate, onMount } from 'svelte';
-	import { ProgressRadial } from '@skeletonlabs/skeleton';
-	import snarkdown from 'snarkdown';
-	import { afterNavigate } from '$app/navigation';
-	import type { Chat } from '$misc/shared';
-	import { chatStore, enhancedLiveAnswerStore, isLoadingAnswerStore } from '$misc/stores';
-	import ChatMessages from './ChatMessages.svelte';
-
+	import { onMount, onDestroy } from 'svelte';
+  	import { afterUpdate, beforeUpdate, onMount } from 'svelte';
+    	import { ProgressRadial } from '@skeletonlabs/skeleton';
+   	import snarkdown from 'snarkdown';
+    	import { afterNavigate } from '$app/navigation';
+    	import type { Chat } from '$misc/shared';
+   	import { chatStore, enhancedLiveAnswerStore, isLoadingAnswerStore } from '$misc/stores';
+   	import ChatMessages from './ChatMessages.svelte';
+	
 	export let slug: string;
 	export let chat: Chat | undefined = undefined;
 
@@ -19,13 +20,22 @@
 	// Autoscroll: https://svelte.dev/tutorial/update
 	let div: HTMLElement | null | undefined;
 	let autoscroll: boolean | null | undefined;
+	let timer: ReturnType<typeof setTimeout>;
+    	let isTimeUp = false;
 
 	onMount(() => {
 		// bind to the *scrollable* element by it's id
 		// note: element is not exposed in this file, it lives in app.html
 		div = document.getElementById('page');
+		timer = setTimeout(() => {
+		            isTimeUp = true;
+		            console.log("Time is up!");
+		        }, 30 * 60 * 1000); // 30 minutes in milliseconds
 	});
 
+	onDestroy(() => {
+	        clearTimeout(timer);
+	    });
 	beforeUpdate(() => {
 		autoscroll = div && div.offsetHeight + div.scrollTop > div.scrollHeight - 20;
 	});
@@ -59,6 +69,16 @@
 		</div>
 
 		<slot name="additional-content-bottom" />
+		<div class="animate-pulse md:w-12 self-center py-2 md:py-6" class:invisible={!$isLoadingAnswerStore}>
+		            <ProgressRadial class="w-8" stroke={120} meter="stroke-tertiary-500" track="stroke-tertiary-500/30" />
+		        </div>
+		
+		        {#if !isTimeUp}
+		            <!-- Chat input component here -->
+		        {:else}
+		            <div class="chat-disabled-message">
+		                The chat session has ended. Thank you for participating.
+		            </div>
 
 		<!-- Progress indicator -->
 		<div
