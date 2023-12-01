@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount, onDestroy } from 'svelte'; // Timer
 	import { afterUpdate, beforeUpdate, onMount } from 'svelte';
 	import { ProgressRadial } from '@skeletonlabs/skeleton';
 	import snarkdown from 'snarkdown';
@@ -19,12 +20,24 @@
 	// Autoscroll: https://svelte.dev/tutorial/update
 	let div: HTMLElement | null | undefined;
 	let autoscroll: boolean | null | undefined;
+	let timer: ReturnType<typeof setTimeout>; // Timer
+    	let isTimeUp = false; // Timer
 
 	onMount(() => {
 		// bind to the *scrollable* element by it's id
 		// note: element is not exposed in this file, it lives in app.html
 		div = document.getElementById('page');
+		// Start a 30-minute timer
+	        timer = setTimeout(() => {
+	            isTimeUp = true;
+	            console.log("Time is up!");
+	            // Add any additional actions to take when time is up
+	            // Optionally, emit an event or call a function to handle the end of the session
+	        }, 30 * 60 * 1000); // 30 minutes in milliseconds
 	});
+	onDestroy(() => {
+	        clearTimeout(timer);
+	    });
 
 	beforeUpdate(() => {
 		autoscroll = div && div.offsetHeight + div.scrollTop > div.scrollHeight - 20;
@@ -73,4 +86,9 @@
 			/>
 		</div>
 	</div>
+	{#if isTimeUp}
+        <div class="time-up-message">
+            Your 30 minutes are up! Thank you for participating.
+        </div>
+    {/if}
 {/if}
