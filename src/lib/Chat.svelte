@@ -33,7 +33,7 @@
 	            console.log("Time is up!");
 	            // Add any additional actions to take when time is up
 	            // Optionally, emit an event or call a function to handle the end of the session
-	        }, 30 * 60 * 1000); // 30 minutes in milliseconds
+	        }, 2 * 60 * 1000); // 30 minutes in milliseconds
 	});
 	onDestroy(() => {
 	        clearTimeout(timer);
