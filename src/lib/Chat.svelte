@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte'; // Timer
+	import { onDestroy } from 'svelte'; // Timer
 	import { afterUpdate, beforeUpdate, onMount } from 'svelte';
 	import { ProgressRadial } from '@skeletonlabs/skeleton';
 	import snarkdown from 'snarkdown';
